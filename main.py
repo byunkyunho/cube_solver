@@ -3,10 +3,11 @@ import cube
 import ev3_socket
 import threading
 from ursina import *
+import re
 
 cube = cube.CUBE()
 
-#ev3 = ev3_socket.cube_robot()
+ev3 = ev3_socket.cube_robot()
 
 def solve_thread():
     engine.action_mode = False
@@ -14,10 +15,10 @@ def solve_thread():
     solution = cube.get_solution()
     engine.message.text = "Start Solve"
     start_time = time.time()
-    # for rotation in solution:
-    #     ev3.rotate(rotation)
+    for rotation in solution:
+        ev3.rotate(rotation)
+        time.sleep(0.45)
 
-    #     time.sleep(0.45)
     engine.action_mode = True
     engine.message.disable()
     for CUBE in engine.CUBES:
@@ -45,13 +46,11 @@ class main_engine(Ursina):
         self.CUBES = [Entity(model=self.model, texture=self.texture, position=pos) for pos in self.SIDE_POSITIONS]
         self.PARENT = Entity()
         self.rotation_axes = {'L': 'x', 'R': 'x', 'U': 'y', 'D': 'y', 'F': 'z', 'B': 'z'}
-        self.cubes_side_positons = {'L': self.L, 'D': self.D, 'R': self.R, 'F': self.F,
-                                    'B': self.B, 'U': self.U}
+        self.cubes_side_positons = {'L': self.L, 'D': self.D, 'R': self.R, 'F': self.F,'B': self.B, 'U': self.U}
         self.animation_time = 0.3
         self.action_trigger = True
         self.action_mode = False
         self.message = Text(origin=(0, 19), color=color.red, y=0.95, size = 0.07)
-
         self.toggle_game_mode()
         self.create_sensors()
 
@@ -65,8 +64,7 @@ class main_engine(Ursina):
                 exec(f'self.PARENT.rotation_{rotation_axis} = 90')
 
     def create_sensors(self):
-        create_sensor = lambda name, pos, scale: Entity(name=name, position=pos, model='cube', color=color.dark_gray,
-                                                        scale=scale, collider='box', visible=False)
+        create_sensor = lambda name, pos, scale: Entity(name=name, position=pos, model='cube', color=color.dark_gray,scale=scale, collider='box', visible=False)
         self.L_sensor = create_sensor(name='L', pos=(-0.99, 0, 0), scale=(1.01, 3.01, 3.01))
         self.F_sensor = create_sensor(name='F', pos=(0, 0, -0.99), scale=(3.01, 3.01, 1.01))
         self.B_sensor = create_sensor(name='B', pos=(0, 0, 0.99), scale=(3.01, 3.01, 1.01))
@@ -76,7 +74,6 @@ class main_engine(Ursina):
 
     def toggle_game_mode(self):
         self.action_mode = not self.action_mode
-
 
     def toggle_animation_trigger(self):
         self.action_trigger = not self.action_trigger
@@ -117,7 +114,7 @@ class main_engine(Ursina):
                 if collider_name in 'L R F B U D':
                     cube.rotate(collider_name)
                     self.rotate_side(collider_name, 1) 
-                    #ev3.rotate(collider_name)
+                    ev3.rotate(collider_name)
                     break
         
         super().input(key)
