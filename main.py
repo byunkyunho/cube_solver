@@ -5,7 +5,8 @@ import threading
 from ursina import *
 
 cube = cube.CUBE()
-ev3 = ev3_socket.cube_robot()
+
+#ev3 = ev3_socket.cube_robot()
 
 def solve_thread():
     engine.action_mode = False
@@ -13,10 +14,10 @@ def solve_thread():
     solution = cube.get_solution()
     engine.message.text = "Start Solve"
     start_time = time.time()
-    for rotation in solution:
-        ev3.rotate(rotation)
+    # for rotation in solution:
+    #     ev3.rotate(rotation)
 
-        time.sleep(0.4)
+    #     time.sleep(0.45)
     engine.action_mode = True
     engine.message.disable()
     for CUBE in engine.CUBES:
@@ -32,17 +33,12 @@ class main_engine(Ursina):
     def __init__(self):
         super().__init__()
         window.fullscreen = True
-        #Entity(model='quad', scale=60, texture='white_cube', texture_scale=(60, 60), rotation_x=90, y=-5,
-        #       color=color.light_gray)  # plane
-        #Entity(model='sphere', scale=100, texture='textures/sky0', double_sided=True)  # sky
         EditorCamera()
         camera.world_position = (0, 0, -15)
-        self.model, self.texture = 'models/custom_cube', 'textures/rubik_texture'
+        self.model, self.texture = 'src/custom_cube', 'src/rubik_texture'
         self.load_game()
-        self.solve_button = Button(text="solve", scale=0.2, x=0.6)
+        self.solve_button = Button(text="solve", scale=0.2, x=0.6, text_size=5)
         self.solve_button.on_click = solve_ev3_cube
-
-
 
     def load_game(self):
         self.create_cube_positions()
@@ -115,14 +111,13 @@ class main_engine(Ursina):
         self.SIDE_POSITIONS = self.L | self.D | self.F | self.B | self.R | self.U
 
     def input(self, key):
-
         if key == 'mouse1' and self.action_mode and self.action_trigger:
             for hitinfo in mouse.collisions:
                 collider_name = hitinfo.entity.name
                 if collider_name in 'L R F B U D':
                     cube.rotate(collider_name)
                     self.rotate_side(collider_name, 1) 
-                    ev3.rotate(collider_name)
+                    #ev3.rotate(collider_name)
                     break
         
         super().input(key)
