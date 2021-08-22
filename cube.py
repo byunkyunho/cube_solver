@@ -29,7 +29,6 @@ class CUBE:
     def rotate(self, side):
         self.return_cube = {}
         self.return_cube = {"U":self.cube['U'][:],"B":self.cube['B'][:],"F":self.cube['F'][:],"D":self.cube['D'][:],"L":self.cube['L'][:],"R":self.cube['R'][:]}
-
         if side == "U":
             self.rotate_side("U")
 
@@ -124,27 +123,7 @@ class CUBE:
             self.return_cube['B'][8] = self.cube['R'][8]
 
         self.cube = self.return_cube
-
-    def mix(self, rotate):
-        for _ in range(rotate - 1):
-            side = ["U", "L", "F", "R", "B", "D"][random.randint(0,5)]
-            self.rotate(side)
-            print(side)
    
-    def print_cube(self):
-        for side in ["U", "L", "F", "R", "B", "D"]:
-            for color in self.cube[side][0:3]:
-                print(color, end=' ')
-            print()
-            for color in self.cube[side][3:6]:
-                print(color, end=' ')
-            print()
-            for color in self.cube[side][6:9]:
-                print(color, end=' ')
-            print()
-            print()
-        print("-----------------")
-
     def get_solution(self):
         result = list(map(str, utils.solve("".join(self.cube["U"] + self.cube["L"]  + self.cube["F"]+ self.cube["R"]+ self.cube["B"]+ self.cube["D"]), "Kociemba")))
         ACROSS_BLOCK = {"R" : "L", "L":"R", "U":"D", "D":"U", "F":"B","B":"F" }
